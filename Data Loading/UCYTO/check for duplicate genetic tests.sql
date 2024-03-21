@@ -3,7 +3,7 @@ WITH x AS (
 		vgt.patientid
 		, vgt.eventid
 		, vgt.sourcetype
-		, COALESCE(vgt.authoriseddate, vgt.receiveddate, vgt.collecteddate, vgt.requesteddate)::date testdate
+		, vgt.authoriseddate, vgt.receiveddate, vgt.collecteddate, vgt.requesteddate
 		, vgt.karyotypingmethod 
 		, vgt.organisationcode_testresult
 		, vgt.servicereportidentifier
@@ -44,7 +44,10 @@ FROM
 INNER JOIN auto_tests auto2 ON
 	auto.patientid = auto2.patientid
 	AND auto.eventid < auto2.eventid
-	AND auto.testdate = auto2.testdate
+	AND (auto.authoriseddate = auto2.authoriseddate OR (auto.authoriseddate IS NULL AND auto2.authoriseddate IS null))
+	AND (auto.receiveddate = auto2.receiveddate OR (auto.receiveddate IS NULL AND auto2.receiveddate IS null))
+	AND (auto.collecteddate = auto2.collecteddate OR (auto.collecteddate IS NULL AND auto2.collecteddate IS null))
+	AND (auto.requesteddate = auto2.requesteddate OR (auto.requesteddate IS NULL AND auto2.requesteddate IS null))
 	AND auto.karyotypingmethod = auto2.karyotypingmethod 
 	AND auto.organisationcode_testresult = auto2.organisationcode_testresult 
 	AND auto.servicereportidentifier = auto2.servicereportidentifier 
